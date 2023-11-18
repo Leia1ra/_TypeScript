@@ -1,0 +1,7 @@
+# 프로젝트 제외 경로
+/PJT/join/signIn.js
+/PJT/join/signIn.js.map
+/PJT/login/login.js
+/PJT/login/login.js.map
+/syntax/Type.js
+/syntax/Type.js.map
