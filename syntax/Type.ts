@@ -102,6 +102,19 @@ const n:number = anyUser;*/
 // 2. 인수를 정의할 때 기본값을 지정할 수 있음
 // 3. 인수의 반환값의 타입에 다양한 타입을 지정할 수 있음
 console.log('\n함수  #####################################################');
+function methodTest1(b:string) { return b; }
+console.log(methodTest1('methodTest1 : 명명 함수 선언')); /* 1. 명명 함수 선언*/
+let methodTest2:(a:string) => string = function (a:string) { return a; }
+console.log(methodTest2('methodTest2 : 익명 함수 표현')); /* 2. 익명 함수 표현 */
+let methodTest3:(a:string) => string = function originalMethod(a:string){return a;}
+console.log(methodTest3('methodTest3 : 명명 함수 표현')); /* 3. 명명 함수 표현 */
+let methodTest4:(a:string) => string = (b:string) => { return b; }
+console.log(methodTest4('methodTest4 : 화살표 함수')); /* 4. 화살표 함수 */
+let methodTest5:(a:string) => string = (function (b:string) { return b; })
+console.log(methodTest5('methodTest5 : 즉시 실행 표현')); /* 5. 즉시 실행 표현 */
+let methodTest6:Function = new Function('b', 'return b')
+console.log(methodTest6('methodTest6 : constructor')) /* 6. function constructor */
+
 function formatName(name : string):string{
     return `${name}님`
 }
@@ -154,14 +167,74 @@ names.forEach(function (name) {
 
 
 
+/* 타입 어서션*/
+console.log('\n타입 어서션 ################################################');
+// const myCanvas1 : HTMLElement = document.getElementById('main')
+// console.log(myCanvas1.width)
+// Error TS2339: Property 'width' does not exist on type 'HTMLElement'
+// let c1 : HTMLElement = document.getElementById('main') as HTMLCanvasElement;
+//console.log(c1.width); // -> 얘도 에러(Ts도 업케스팅의 개념이 있는거 같음)
+// let c2 : HTMLCanvasElement = document.getElementById('main') as HTMLCanvasElement;
+// let c3 = document.getElementById('main') as HTMLCanvasElement;
+// console.log(c2.width);
+// console.log(c3.width);
+
+// 타입 캐스팅
+const casting:any = 1;
+const caster : number = casting as number
 
 
 
+/*타입 앨리어스(Type Alias)*/
+console.log('\n타입 앨리어스 ###############################################');
+// 인라인 타입지정시 동일한 타입을 반복적으로 정의하기에는 코드의 기술이 복잡해지는 문제 발생
+// 타입 앨리어스는  통하여 동일한 타입을 간략하게 재사용할 수 있고
+// type 타입명 = 값
+type Name = string;
+function printPoint(point : Point) {
+    console.log(`x 좌표는 ${point.x}, y 좌표는 ${point.y}`);
+}
+
+// method 1 : 복잡하고 긺
+let lineObject : {x:number,y:number} = {
+    x:200,
+    y:200,
+}; printPoint(lineObject);
+
+// method 2 :  타입에 이름을 붙여 재사용성을 높임
+type Point = {
+    x:number;
+    y:number;
+}
+// 짦고 간결함
+let line:Point = {
+    // 타입이 맞아도 속성명이 다르면 에러
+    x:100,
+    y:100,
+}; printPoint(line);
 
 
+// 함수타입
+function fnformat(a:string):string { return `${a}씨`; }
+type Formatter = (a:string) => string // 이게 함수타입
+type fnType = (object:{fName:string, format:Formatter}) => void; // 이게 함수타입
+type fnInputs = {
+    fName:string;
+    format:Formatter;
+}
 
+let fnObject:fnInputs = { fName:'Hana', format:fnformat }
+function fnType1(object:fnInputs){
+    console.log(object.format(object.fName));
+} fnType1(fnObject);
 
+let fnType2:fnType = function (object:fnInputs) {
+    console.log(object.format(object.fName));
+}; fnType2(fnObject);
 
+let fnType3:fnType = function orgFn(object:fnInputs){
+    console.log(object.format(object.fName));
+}; fnType3(fnObject);
 
 
 
