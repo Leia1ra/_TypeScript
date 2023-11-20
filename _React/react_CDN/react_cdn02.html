@@ -18,8 +18,13 @@
 		constructor(name) {
 			this.company = name;
 		}
-		
+		// 메소드 생성 (반환형을 지정하지 않는다.)
+		present(){
+			return "<p>나의 차는 " + this.company + "에서 제조하였습니다.</p>"
+		}
 	}
+	const myCar = new Car("현다이");
+	document.write(myCar.present());
 </script>
 </body>
 </html>
