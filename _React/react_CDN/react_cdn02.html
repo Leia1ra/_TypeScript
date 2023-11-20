@@ -25,6 +25,25 @@
 	}
 	const myCar = new Car("현다이");
 	document.write(myCar.present());
+	
+	class Model extends Car{
+		modelName;
+		constructor(name, modelName) {
+			super(name);
+			this.modelName = modelName;
+		}
+		/*present() {
+			return super.present() + `모델명은 ${this.modelName}입니다.`;
+		}*/
+		show(){
+			// 상위클래스를 하위클래스에서 호출
+			// this.메소드명() : 상위클래스의 메소드 호출
+			return this.present() + `모델명은 ${this.modelName}입니다.`;
+		}
+	}
+	const model = new Model("현다이","아반떼");
+	// document.write(model.present());
+	document.write(model.show());
 </script>
 </body>
 </html>
