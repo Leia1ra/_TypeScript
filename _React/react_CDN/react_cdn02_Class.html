@@ -22,6 +22,11 @@
 		present(){
 			return "<p>나의 차는 " + this.company + "에서 제조하였습니다.</p>"
 		}
+		
+		showCar(){
+			// 하위클래스 가져오기..?
+			return this.show();
+		}
 	}
 	const myCar = new Car("현다이");
 	document.write(myCar.present());
@@ -38,12 +43,13 @@
 		show(){
 			// 상위클래스를 하위클래스에서 호출
 			// this.메소드명() : 상위클래스의 메소드 호출
-			return this.present() + `모델명은 ${this.modelName}입니다.`;
+			return "<div>" + this.present() + ", 모델명은" + this.modelName + "입니다.</div>";
 		}
 	}
 	const model = new Model("현다이","아반떼");
 	// document.write(model.present());
 	document.write(model.show());
+	document.write(model.showCar());
 </script>
 </body>
 </html>

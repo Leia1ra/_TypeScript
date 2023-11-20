@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Title</title>
+	<!-- CDN 으로 react 링크 걸기-->
+	<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+	<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+	<!-- CDN 으로 babel 링크 걸기 : JSX타입을 감지하여 실시간 반응 -->
+	<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+	
+</head>
+<body>
+<script>
+	function hello1(){
+		return "<div>hello</div>"
+	}
+	var hello2 = function () {
+		return "<div>hello</div>"
+	}
+	var hello3 = () => {
+		return "<div>hello</div>"
+	}
+	var hello4 = () => "리턴이 생략됨";
+	
+	document.write(hello1());
+	document.write(hello2());
+	document.write(hello3());
+	document.write(hello4());
+</script>
+<h1>클래스에 화살표함수 선언</h1>
+<p>화살표함수를 이요한 이벤트 처리</p>
+<button id="btn">화살표 함수 이벤트</button>
+<p id="view"></p>
+<script>
+	class TestColor {
+		constructor(color) {
+			this.colorName = color;
+		}
+		backColorChange = () => {
+			document.getElementsByTagName("body")[0].style.backgroundColor = "pink";
+		}
+		changeColor = (clr) => {
+			this.color = clr
+			document.getElementById('btn').style.backgroundColor = this.colorName;
+			document.getElementById('view').innerHTML += this.colorName +"";
+		}
+	}
+	const tColor = new TestColor("Red");
+	// 함수 호출 : body가 로딩이 완료되면
+	window.addEventListener("load", tColor.backColorChange);
+	document.getElementById('btn').addEventListener('click', tColor.changeColor);
+</script>
+</body>
+</html>
