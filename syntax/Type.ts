@@ -215,7 +215,7 @@ let line:Point = {
 
 
 // 함수타입
-function fnformat(a:string):string { return `${a}씨`; }
+function fnFormat(a:string):string { return `${a}씨`; }
 type Formatter = (a:string) => string // 이게 함수타입
 type fnType = (object:{fName:string, format:Formatter}) => void; // 이게 함수타입
 type fnInputs = {
@@ -223,18 +223,146 @@ type fnInputs = {
     format:Formatter;
 }
 
-let fnObject:fnInputs = { fName:'Hana', format:fnformat }
-function fnType1(object:fnInputs){
+let fnObject:fnInputs = { fName:'Hana', format:fnFormat }
+function fnType1(object:fnInputs):void {
     console.log(object.format(object.fName));
 } fnType1(fnObject);
 
-let fnType2:fnType = function (object:fnInputs) {
+let fnType2:fnType = function (object:fnInputs):void {
     console.log(object.format(object.fName));
 }; fnType2(fnObject);
 
-let fnType3:fnType = function orgFn(object:fnInputs){
+let fnType3:fnType = function orgFn(object:fnInputs):void {
     console.log(object.format(object.fName));
 }; fnType3(fnObject);
+
+let fnType4:fnType = (object:fnInputs):void => {
+    console.log(object.format(object.fName));
+}; fnType4(fnObject);
+
+let fnType5:fnType = (function(object:fnInputs):void {
+    console.log(object.format(object.fName));
+}); fnType5(fnObject);
+
+
+// 인덱스 타입
+// 객체의 키 이름을 명시하지 않고 Type Alias를 정의할 수 있음
+// {[] : 타입명}
+type Label = {
+    [key:string] : string
+}
+const labels:Label={
+    topTitle : '톱 페이지의 제목입니다',
+    topSupTitle : '톱 페이지의 하위 제목입니다',
+    topFeature1 : '톱페이지의 기능 1 입니다',
+    topFeature2 : '톱페이지의 기능 2 입니다',
+}
+
+
+
+/*인터페이스*/
+console.log('\n인터페이스 ##################################################');
+interface PointInterface {
+    x:number;
+    y?:number;
+}
+function printPointInterface(point:PointInterface):void {
+    console.log(`x좌표는 ${point.x}, y좌표는 ${point.y}, z좌표는 ${point.z}`);
+}
+interface PointInterface {
+    z:number;
+}
+printPointInterface({x:100,z:100});
+printPointInterface({x:100,y:100,z:100});
+
+class MyPoint implements PointInterface{
+    x:number;
+    z:number;
+}
+// 인터페이스 확장
+interface Colorful {
+    color:string;
+}
+interface Circle {
+    radius:number;
+}
+type testInterfaceFn = ()=>void;
+interface ColorfulCircle extends Colorful, Circle{
+    gradation?:boolean;
+    test:testInterfaceFn;
+}
+
+const cc: ColorfulCircle = {
+    test(): void {
+        console.log("ㅎㅇ"+this.color);
+    },
+    color:'Red',
+    radius:10
+    // gradation:true,
+};
+console.log(cc);
+cc.test();
+class MyCircle implements ColorfulCircle {
+    color: string;
+    radius: number;
+
+    test(){
+        console.log(`${this.radius} : ${this.color}`);
+    }
+    // gradation: boolean;
+}
+let myCircleTest = new MyCircle();
+myCircleTest.color = 'red'; myCircleTest.radius = 5;
+myCircleTest.test();
+
+/*클래스*/
+console.log('\n클래스 #####################################################');
+class PointClass {
+    x:number;
+    y:number;
+
+    /*생성자*/
+    constructor(x:number=0, y:number=0){ // 인수가 없는 경우의 초기값 지정
+        this.x = x;
+        this.y = y;
+    }
+
+    moveX(n:number):void{
+        // 반환값이 없는 함수를 정의할 때는 void를 지정한다.
+        this.x += n;
+    }
+    moveY(n:number):void{
+        this.y += n;
+    }
+}
+const pClass = new PointClass();
+pClass.moveX(10);
+console.log(`x:${pClass.x} <-> y:${pClass.y}`);
+
+
+class Point3DClass extends PointClass {
+    z:number;
+    constructor(x:number = 0, y:number = 0, z:number = 0) {
+        super(x, y);
+        this.z = z;
+    }
+
+    /*Overriding*/
+    moveX(n: number) {
+        super.moveX(n+10);
+    }
+
+    moveZ(n:number):void{
+        this.z += n;
+    }
+}
+
+
+
+
+
+
+
 
 
 
