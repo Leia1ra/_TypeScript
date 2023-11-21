@@ -9,16 +9,16 @@ enum condition {
     err = '2px solid red',
     focus = '2px solid #1ebee6'
 }
-function validationCheck(element:HTMLInputElement, reg:RegExp, errMsg?:HTMLDivElement ) {
+function validationCheck(element:HTMLInputElement, reg:RegExp, errMsgbox?:HTMLDivElement, errMsg?:string ) {
     element.addEventListener("focusout", function () {
         if(!reg.test(this.value)){
             this.style.border = condition.err;
-            errMsg.innerHTML = '올바른 이름 양식이 아닙니다.';
-            errMsg.style.display = 'block';
+            errMsgbox.innerHTML = `올바른 ${errMsg} 양식이 아닙니다.`;
+            errMsgbox.style.display = 'block';
         } else {
             this.style.border = condition.default;
-            errMsg.innerHTML = '';
-            errMsg.style.display = 'none';
+            errMsgbox.innerHTML = '';
+            errMsgbox.style.display = 'none';
         }
     })
     element.addEventListener("focusin", function () {
@@ -31,8 +31,11 @@ document.addEventListener('DOMContentLoaded', function () {
     let errMsg = document.getElementById('err') as HTMLDivElement;
     /*inputs*/
     let id = document.getElementById('id') as HTMLInputElement;
+
     let pw = document.getElementById('pw') as HTMLInputElement;
     let pwRe = document.getElementById('pwRe') as HTMLInputElement;
+    let meter = document.getElementById('meter') as HTMLProgressElement;
+
     let name = document.getElementById('name') as HTMLInputElement;
     let email = document.getElementById('email') as HTMLInputElement;
     let tel = document.getElementById('tel') as HTMLInputElement;
@@ -54,15 +57,48 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    /* 유효성검사 */
+    /*유효성검사*/
     let idReg = /^[a-zA-Z]{1}[a-zA-Z0-9_]{6,12}$/;
-    validationCheck(id, idReg, errMsg); /*아이디 유효성 검사*/
-    /*비밀번호 */
+    validationCheck(id, idReg, errMsg,"아이디"); /*아이디 유효성 검사*/
+
+    /*비밀번호*/
+    function pwStrengthCheck(pwIn:string) {
+        let strength = 0;
+        const pwReg:RegExp[] = [/* + 는 하나 이상 포함*/
+            /[a-z]+/,
+            /[A-Z]+/,
+            /[0-9]+/,
+            /[$@#&!]+/
+        ];
+        pwReg.forEach((value:RegExp, idx:number) => {
+            // strength += value.test(pw.value) ? 1 : 0
+            strength += pwIn.match(value) ? 1 : 0;
+        })
+        meter.value = strength;
+        switch (strength) {
+            case 1 :
+                meter.style.backgroundColor = 'red'
+                break
+            case 2:
+            case 3:
+                meter.style.backgroundColor = 'orange'
+                break
+            case 4:
+                meter.style.backgroundColor = 'green'
+                break
+        }
+    }
+
+    pw.addEventListener('keyup', function (event) {
+        pwStrengthCheck(pw.value);
+        // console.log('ㅎㅇ');
+    })
 
     let nameReg = /^[가-힣]{2,7}$/;
-    validationCheck(name, nameReg, errMsg);/*이름 유효성 검사*/
+    validationCheck(name, nameReg, errMsg, "이름");/*이름 유효성 검사*/
     let emailReg = /^\w{4,14}[@][a-z]{3,10}[.][a-z]{2,3}([.][a-z]{2,3})?$/;
-    validationCheck(email, emailReg, errMsg);/*이메일 유효성 검사*/
+    validationCheck(email, emailReg, errMsg, "이메일");/*이메일 유효성 검사*/
+
 
 
     /* 사업자 */
@@ -129,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if(errCnt === 0){
-
+            /**/
         } else {
             event.preventDefault();
         }
