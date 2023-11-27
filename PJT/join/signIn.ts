@@ -157,13 +157,10 @@ document.addEventListener('DOMContentLoaded', function () {
     pw.addEventListener('focusout', function () {
         pwCheck(passable);
         if(!passable){
-            // ++errCnt;
             pw.style.border = condition.err;
         }
         else {
             pw.style.border = condition.default;
-            // errCnt -= errBuffer;
-            // errBuffer=0;
         }
     })
 
@@ -181,6 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
     telNums1.addEventListener('keydown', function (event) {
         console.log(telNums1.value.length)
         if((!isNum.test(event.key) && event.key !== 'Backspace') || (telNums1.value.length > 3 && event.key !== 'Backspace')){
+            errMsg.innerHTML = errType.numCheck;
             event.preventDefault();
         }
     })
