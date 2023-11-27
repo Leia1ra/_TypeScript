@@ -4,10 +4,11 @@ enum errType {
     pwCheck = '입력된 비밀번호와 확인번호가 일치하지 않습니다.',
     pwStrength = '6-15자리, 특수문자, 대소문자, 숫자를 최소 2가지를 조합하여 비밀번호를 입력하세요',
     capsLock = 'CapsLock이 켜져있습니다.',
+    numCheck = '숫자만 입력해 주세요'
 
 }
 enum condition {
-    default='1px solid black',
+    default='1px solid #ddd',
     err = '2px solid red',
     focus = '2px solid #1ebee6'
 }
@@ -32,6 +33,22 @@ function validationCheck(element:HTMLInputElement, reg:RegExp, errMsgbox?:HTMLDi
     return result;
 }
 
+
+function telCheck(element:HTMLInputElement, telBox:HTMLDivElement) {
+    let isNum = /^\d+$/;
+    element.addEventListener('keydown', function (event) {
+        if((!isNum.test(event.key) && event.key !== 'Backspace') || (element.value.length > 3 && event.key !== 'Backspace')){
+            telBox.style.border = condition.err;
+            event.preventDefault();
+        } else {
+            telBox.style.border = condition.focus;
+        }
+    })
+    element.addEventListener("focusout", function () {
+        telBox.style.border = condition.default;
+    })
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     let errCnt = 0;
     let errMsg = document.getElementById('err') as HTMLDivElement;
@@ -51,7 +68,6 @@ document.addEventListener('DOMContentLoaded', function () {
     let gender = document.getElementById('gender') as HTMLSelectElement;
     let birth = document.getElementById('birth') as HTMLInputElement;
 
-
     /* CapsLock검사 */
     document.addEventListener('keydown', function (event) {
         if (event.getModifierState('CapsLock')) {
@@ -67,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let idReg = /^[a-zA-Z]{1}[a-zA-Z0-9_]{6,12}$/;
     let idPassable = validationCheck(id, idReg, errMsg,"아이디"); /*아이디 유효성 검사*/
 
-    /*비밀번호*/
+    /*비밀번호 강도 + 유효성 검사*/
     function pwStrengthCheck():boolean {
         let strength = 0;
         const pwReg:RegExp[] = [/* + 는 하나 이상 포함*/
@@ -109,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         if(strength >= 2 ) { return true }
         else { return false }
-    }
+    } /* 비밀번호 강도 검사 */
     function pwCheck(passable:boolean) {
         if(passable == undefined || !passable){
             errMsg.innerHTML = errType.pwStrength;
@@ -124,11 +140,9 @@ document.addEventListener('DOMContentLoaded', function () {
             pw.style.border = condition.focus;
         }
     }
-    let errBuffer : number = 0;
-    let passable : boolean ;
+    let passable : boolean;
     pw.addEventListener('focusin', function () {
-        errBuffer = errCnt;
-        console.log(`pass : ${passable} | err : ${errCnt} | buf : ${errBuffer}`);
+        // errBuffer = errCnt;
         pw.addEventListener('keyup', function () {
             passable = pwStrengthCheck();
             console.log(passable);
@@ -142,20 +156,34 @@ document.addEventListener('DOMContentLoaded', function () {
     })
     pw.addEventListener('focusout', function () {
         pwCheck(passable);
-        if(!passable){ ++errCnt; }
+        if(!passable){
+            // ++errCnt;
+            pw.style.border = condition.err;
+        }
         else {
             pw.style.border = condition.default;
-            errCnt -= errBuffer;
-            errBuffer=0;
-            console.log(`pass : ${passable} | err : ${errCnt} | buf : ${errBuffer}`);
+            // errCnt -= errBuffer;
+            // errBuffer=0;
         }
     })
-
 
     let nameReg = /^[가-힣]{2,7}$/;
     let namePassable = validationCheck(name, nameReg, errMsg, "이름");/*이름 유효성 검사*/
     let emailReg = /^\w{4,14}[@][a-z]{3,10}[.][a-z]{2,3}([.][a-z]{2,3})?$/;
     let emailPassable = validationCheck(email, emailReg, errMsg, "이메일");/*이메일 유효성 검사*/
+
+    /*전화 번호 입력 제한*/
+    let telDiv = document.getElementById('tel-container') as HTMLDivElement;
+    // telCheck(telNums1, telDiv);
+    // telCheck(telNums2, telDiv);
+
+    let isNum = /^\d+$/;
+    telNums1.addEventListener('keydown', function (event) {
+        console.log(telNums1.value.length)
+        if((!isNum.test(event.key) && event.key !== 'Backspace') || (telNums1.value.length > 3 && event.key !== 'Backspace')){
+            event.preventDefault();
+        }
+    })
 
 
     /* 사업자 */
@@ -173,46 +201,34 @@ document.addEventListener('DOMContentLoaded', function () {
     let signIn = document.getElementById("signIn") as HTMLFormElement;
     signIn.addEventListener('submit', function (event) {
         /*ID*/
-        if(id.value === ""){
+        if(!idPassable){
             id.style.border = condition.err;
-            ++errCnt
-        } else if(!idPassable){
             ++errCnt
         }
 
         /*PW*/
-        if(pw.value === ""){
-            pw.style.border = condition.err;
-            ++errCnt
-        } else if (!passable){
+        if (!passable){
             pw.style.border = condition.err;
             errMsg.innerHTML = errType.pwStrength;
-        }
-        if(pwRe.value === ""){
-            pwRe.style.border = condition.err;
             ++errCnt
-        }
-        if(pw.value !== pwRe.value){
+        } else if(pw.value !== pwRe.value){
             pw.value = "";
             pwRe.value = "";
+            pwRe.style.border = condition.err;
             errMsg.innerHTML = errType.pwCheck;
             errMsg.style.display = "block";
             ++errCnt
         }
 
         /*Name*/
-        if(name.value == ""){
+        if(!namePassable) {
             name.style.border = condition.err;
-            ++errCnt;
-        } else if(!namePassable) {
             ++errCnt;
         }
 
         /*Email*/
-        if(email.value == ""){
+        if(!emailPassable){
             email.style.border = condition.err;
-            ++errCnt;
-        } else if(!emailPassable){
             ++errCnt;
         }
 
@@ -231,7 +247,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if(errCnt === 0){
-            /**/
+            /* DB 조회 로직 추가 */
+
         } else {
             event.preventDefault();
         }
