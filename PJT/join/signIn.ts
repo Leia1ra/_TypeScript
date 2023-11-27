@@ -4,10 +4,11 @@ enum errType {
     pwCheck = '입력된 비밀번호와 확인번호가 일치하지 않습니다.',
     pwStrength = '6-15자리, 특수문자, 대소문자, 숫자를 최소 2가지를 조합하여 비밀번호를 입력하세요',
     capsLock = 'CapsLock이 켜져있습니다.',
+    numCheck = '숫자만 입력해 주세요'
 
 }
 enum condition {
-    default='1px solid black',
+    default='1px solid #ddd',
     err = '2px solid red',
     focus = '2px solid #1ebee6'
 }
@@ -32,6 +33,22 @@ function validationCheck(element:HTMLInputElement, reg:RegExp, errMsgbox?:HTMLDi
     return result;
 }
 
+
+function telCheck(element:HTMLInputElement, telBox:HTMLDivElement) {
+    let isNum = /^\d+$/;
+    element.addEventListener('keydown', function (event) {
+        if((!isNum.test(event.key) && event.key !== 'Backspace') || (element.value.length > 3 && event.key !== 'Backspace')){
+            telBox.style.border = condition.err;
+            event.preventDefault();
+        } else {
+            telBox.style.border = condition.focus;
+        }
+    })
+    element.addEventListener("focusout", function () {
+        telBox.style.border = condition.default;
+    })
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     let errCnt = 0;
     let errMsg = document.getElementById('err') as HTMLDivElement;
@@ -50,7 +67,6 @@ document.addEventListener('DOMContentLoaded', function () {
     let telNums2 = document.getElementsByClassName('tel-nums')[2] as HTMLInputElement;
     let gender = document.getElementById('gender') as HTMLSelectElement;
     let birth = document.getElementById('birth') as HTMLInputElement;
-
 
     /* CapsLock검사 */
     document.addEventListener('keydown', function (event) {
@@ -124,8 +140,7 @@ document.addEventListener('DOMContentLoaded', function () {
             pw.style.border = condition.focus;
         }
     }
-    // let errBuffer : number = 0;
-    let passable : boolean ;
+    let passable : boolean;
     pw.addEventListener('focusin', function () {
         // errBuffer = errCnt;
         pw.addEventListener('keyup', function () {
@@ -156,6 +171,19 @@ document.addEventListener('DOMContentLoaded', function () {
     let namePassable = validationCheck(name, nameReg, errMsg, "이름");/*이름 유효성 검사*/
     let emailReg = /^\w{4,14}[@][a-z]{3,10}[.][a-z]{2,3}([.][a-z]{2,3})?$/;
     let emailPassable = validationCheck(email, emailReg, errMsg, "이메일");/*이메일 유효성 검사*/
+
+    /*전화 번호 입력 제한*/
+    let telDiv = document.getElementById('tel-container') as HTMLDivElement;
+    // telCheck(telNums1, telDiv);
+    // telCheck(telNums2, telDiv);
+
+    let isNum = /^\d+$/;
+    telNums1.addEventListener('keydown', function (event) {
+        console.log(telNums1.value.length)
+        if((!isNum.test(event.key) && event.key !== 'Backspace') || (telNums1.value.length > 3 && event.key !== 'Backspace')){
+            event.preventDefault();
+        }
+    })
 
 
     /* 사업자 */
